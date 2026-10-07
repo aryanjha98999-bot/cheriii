@@ -15,6 +15,7 @@ class AppRoutes {
   static const String profileSetup = '/profile-setup';
 
   static const String journal = '/journal';
+}
 
 class AppAssets {
   AppAssets._();

@@ -32,6 +32,10 @@ class ProfileService {
     DateTime? lastPeriodStart,
     String language = 'English',
     String? avatarAsset,
+    String skinSensitivity = 'Normal',
+    String bodyType = 'Regular fit',
+    String dailyRoutine = 'Moderate / Mixed',
+    String flowTendency = 'Medium balanced',
   }) async {
     final user = currentUser;
     if (user == null) {
@@ -48,6 +52,10 @@ class ProfileService {
           lastPeriodStart?.toIso8601String().split('T').first,
       'language': language,
       'avatar_asset': avatarAsset,
+      'skin_sensitivity': skinSensitivity,
+      'body_type': bodyType,
+      'daily_routine': dailyRoutine,
+      'flow_tendency': flowTendency,
       'updated_at': DateTime.now().toIso8601String(),
     };
 
@@ -62,6 +70,10 @@ class ProfileService {
     DateTime? lastPeriodStart,
     String? language,
     String? avatarAsset,
+    String? skinSensitivity,
+    String? bodyType,
+    String? dailyRoutine,
+    String? flowTendency,
   }) async {
     final user = currentUser;
     if (user == null) {
@@ -83,6 +95,10 @@ class ProfileService {
     }
     if (language != null) data['language'] = language;
     if (avatarAsset != null) data['avatar_asset'] = avatarAsset;
+    if (skinSensitivity != null) data['skin_sensitivity'] = skinSensitivity;
+    if (bodyType != null) data['body_type'] = bodyType;
+    if (dailyRoutine != null) data['daily_routine'] = dailyRoutine;
+    if (flowTendency != null) data['flow_tendency'] = flowTendency;
 
     await _supabase.from('profiles').upsert(data);
   }
@@ -95,6 +111,10 @@ class ProfileService {
       periodLength: userModel.periodLength,
       lastPeriodStart: userModel.lastPeriodStart,
       avatarAsset: userModel.avatarAsset,
+      skinSensitivity: userModel.skinSensitivity,
+      bodyType: userModel.bodyType,
+      dailyRoutine: userModel.dailyRoutine,
+      flowTendency: userModel.flowTendency,
       language: language,
     );
   }

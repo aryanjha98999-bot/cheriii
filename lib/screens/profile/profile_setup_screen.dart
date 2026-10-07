@@ -31,6 +31,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   DateTime? _lastPeriodStart;
 
+  String _skinSensitivity = 'Normal';
+  String _bodyType = 'Regular fit';
+  String _dailyRoutine = 'Moderate / Mixed';
+  String _flowTendency = 'Medium balanced';
+
   // ------------------------------------------------------------
   // AVATARS
   // ------------------------------------------------------------
@@ -142,6 +147,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         cycleLength: _cycleLength,
         periodLength: _periodLength,
         lastPeriodStart: _lastPeriodStart!,
+        skinSensitivity: _skinSensitivity,
+        bodyType: _bodyType,
+        dailyRoutine: _dailyRoutine,
+        flowTendency: _flowTendency,
       );
 
       // Save to Supabase
@@ -153,6 +162,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           periodLength: updatedUser.periodLength,
           lastPeriodStart: updatedUser.lastPeriodStart,
           avatarAsset: updatedUser.avatarAsset,
+          skinSensitivity: updatedUser.skinSensitivity,
+          bodyType: updatedUser.bodyType,
+          dailyRoutine: updatedUser.dailyRoutine,
+          flowTendency: updatedUser.flowTendency,
         );
       } catch (e) {
         debugPrint('Remote profile creation error: $e');
@@ -166,10 +179,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
       if (!mounted) return;
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.main,
-        (route) => false,
+      // Show Day 1 Pad recommendation modal
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => _DayOnePadDialog(
+          user: updatedUser,
+          onContinue: () {
+            Navigator.pop(ctx);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.main,
+              (route) => false,
+            );
+          },
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -675,6 +699,179 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     onTap: _selectLastPeriodDate,
                   ),
 
+                  const SizedBox(height: 24),
+
+                  // ------------------------------------------------
+                  // SKIN SENSITIVITY & RASHES
+                  // ------------------------------------------------
+                  Text(
+                    'Skin Sensitivity & Rash History',
+                    style: AppTextStyles.label,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Do you get rashes, itching or chafing with regular pads?',
+                    style: AppTextStyles.bodyMuted.copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _OptionChip(
+                        label: 'Prone to rashes & chafing',
+                        icon: Icons.healing_rounded,
+                        selected: _skinSensitivity == 'Prone to rashes & chafing',
+                        isAlert: true,
+                        onTap: () => setState(() => _skinSensitivity = 'Prone to rashes & chafing'),
+                      ),
+                      _OptionChip(
+                        label: 'Sensitive skin',
+                        icon: Icons.spa_outlined,
+                        selected: _skinSensitivity == 'Sensitive skin',
+                        onTap: () => setState(() => _skinSensitivity = 'Sensitive skin'),
+                      ),
+                      _OptionChip(
+                        label: 'Normal',
+                        icon: Icons.sentiment_satisfied_alt_rounded,
+                        selected: _skinSensitivity == 'Normal',
+                        onTap: () => setState(() => _skinSensitivity = 'Normal'),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ------------------------------------------------
+                  // BODY TYPE & FIT
+                  // ------------------------------------------------
+                  Text(
+                    'Body Type & Fit',
+                    style: AppTextStyles.label,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Helps Cheri recommend ideal pad wings and rear coverage.',
+                    style: AppTextStyles.bodyMuted.copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _OptionChip(
+                        label: 'Curvy / Wide hips',
+                        icon: Icons.accessibility_new_rounded,
+                        selected: _bodyType == 'Curvy / Wide hips',
+                        onTap: () => setState(() => _bodyType = 'Curvy / Wide hips'),
+                      ),
+                      _OptionChip(
+                        label: 'Athletic / Tall',
+                        icon: Icons.fitness_center_rounded,
+                        selected: _bodyType == 'Athletic / Tall',
+                        onTap: () => setState(() => _bodyType = 'Athletic / Tall'),
+                      ),
+                      _OptionChip(
+                        label: 'Petite / Slim',
+                        icon: Icons.person_outline_rounded,
+                        selected: _bodyType == 'Petite / Slim',
+                        onTap: () => setState(() => _bodyType = 'Petite / Slim'),
+                      ),
+                      _OptionChip(
+                        label: 'Regular fit',
+                        icon: Icons.person_rounded,
+                        selected: _bodyType == 'Regular fit',
+                        onTap: () => setState(() => _bodyType = 'Regular fit'),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ------------------------------------------------
+                  // DAILY ROUTINE & MOVEMENT
+                  // ------------------------------------------------
+                  Text(
+                    'Daily Routine & Movement',
+                    style: AppTextStyles.label,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your daily movement helps customize breathable & flexible pads.',
+                    style: AppTextStyles.bodyMuted.copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _OptionChip(
+                        label: 'Active / Gym / Sports',
+                        icon: Icons.directions_run_rounded,
+                        selected: _dailyRoutine == 'Active / Gym / Sports',
+                        onTap: () => setState(() => _dailyRoutine = 'Active / Gym / Sports'),
+                      ),
+                      _OptionChip(
+                        label: 'Desk job / Long sitting',
+                        icon: Icons.chair_rounded,
+                        selected: _dailyRoutine == 'Desk job / Long sitting',
+                        onTap: () => setState(() => _dailyRoutine = 'Desk job / Long sitting'),
+                      ),
+                      _OptionChip(
+                        label: 'On feet / Travelling',
+                        icon: Icons.directions_walk_rounded,
+                        selected: _dailyRoutine == 'On feet / Travelling',
+                        onTap: () => setState(() => _dailyRoutine = 'On feet / Travelling'),
+                      ),
+                      _OptionChip(
+                        label: 'Moderate / Mixed',
+                        icon: Icons.wb_sunny_outlined,
+                        selected: _dailyRoutine == 'Moderate / Mixed',
+                        onTap: () => setState(() => _dailyRoutine = 'Moderate / Mixed'),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ------------------------------------------------
+                  // FLOW TENDENCY
+                  // ------------------------------------------------
+                  Text(
+                    'Flow Tendency on Day 1 & 2',
+                    style: AppTextStyles.label,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'How does your period usually begin?',
+                    style: AppTextStyles.bodyMuted.copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _OptionChip(
+                        label: 'Heavy initial days',
+                        icon: Icons.water_drop_rounded,
+                        selected: _flowTendency == 'Heavy initial days',
+                        onTap: () => setState(() => _flowTendency = 'Heavy initial days'),
+                      ),
+                      _OptionChip(
+                        label: 'Medium balanced',
+                        icon: Icons.water_drop_outlined,
+                        selected: _flowTendency == 'Medium balanced',
+                        onTap: () => setState(() => _flowTendency = 'Medium balanced'),
+                      ),
+                      _OptionChip(
+                        label: 'Light / Spotting prone',
+                        icon: Icons.grain_rounded,
+                        selected: _flowTendency == 'Light / Spotting prone',
+                        onTap: () => setState(() => _flowTendency = 'Light / Spotting prone'),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 32),
 
                   // ------------------------------------------------
@@ -800,6 +997,202 @@ class _SelectorCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// OPTION CHIP
+// ============================================================
+
+class _OptionChip extends StatelessWidget {
+  const _OptionChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+    this.isAlert = false,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool isAlert;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: selected
+              ? const LinearGradient(
+                  colors: [AppColors.rose, AppColors.crimsonDark],
+                )
+              : null,
+          color: selected
+              ? null
+              : (isAlert ? const Color(0xFFFFF0F2) : Colors.white),
+          border: Border.all(
+            color: selected
+                ? AppColors.crimson
+                : (isAlert
+                    ? AppColors.rose.withValues(alpha: 0.5)
+                    : AppColors.roseLight),
+            width: selected ? 1.8 : 1,
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.crimson.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 17,
+              color: selected
+                  ? Colors.white
+                  : (isAlert ? AppColors.crimson : AppColors.textPrimary),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                color: selected
+                    ? Colors.white
+                    : (isAlert ? AppColors.crimson : AppColors.textPrimary),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// DAY 1 PAD RECOMMENDATION CELEBRATION DIALOG
+// ============================================================
+
+class _DayOnePadDialog extends StatelessWidget {
+  const _DayOnePadDialog({
+    required this.user,
+    required this.onContinue,
+  });
+
+  final UserModel user;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [AppColors.rose, AppColors.crimsonDark],
+                ),
+              ),
+              child: const Icon(
+                Icons.favorite_rounded,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Welcome, ${user.name}! 🌸',
+              style: AppTextStyles.headline.copyWith(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Your Personalized Day 1 Pad is ready',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.crimson,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFEFF2),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.roseLight),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.water_drop_rounded,
+                          color: AppColors.crimson, size: 24),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          user.dayOnePadRecommendation,
+                          style: AppTextStyles.sectionTitle.copyWith(
+                            fontSize: 14.5,
+                            color: AppColors.crimson,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Matched to your profile: ${user.skinSensitivity} • '
+                    '${user.bodyType} • ${user.dailyRoutine}. '
+                    'This ensures zero irritation, zero chafing, and maximum leakage protection for your start.',
+                    style: AppTextStyles.body.copyWith(
+                      fontSize: 12.5,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'As you log your daily symptoms and routine, Cheri’s Gemini AI '
+              'will adjust your pad and wellness advice every day.',
+              style: AppTextStyles.bodyMuted.copyWith(fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 22),
+            PrimaryButton(
+              label: 'Start Exploring Cheri →',
+              height: 48,
+              onPressed: onContinue,
+            ),
+          ],
         ),
       ),
     );

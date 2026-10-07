@@ -34,17 +34,24 @@ class _CheckInScreenState extends State<CheckInScreen> {
   Set<String> _symptoms = <String>{};
   FlowLevel _flow = FlowLevel.none;
   double _sleep = 7;
+  String _activityLevel = 'Desk Work';
 
   @override
   void initState() {
     super.initState();
-    final entry = context.read<AppState>().entryFor(Helpers.today);
+    final state = context.read<AppState>();
+    final entry = state.entryFor(Helpers.today);
     if (entry != null) {
       _mood = entry.mood;
       _symptoms = Set<String>.of(entry.symptoms);
       _flow = _flowOptions.contains(entry.flow) ? entry.flow : FlowLevel.none;
       _sleep = entry.sleepHours.clamp(4.0, 8.0).toDouble();
       _notes.text = entry.notes;
+      _activityLevel = entry.activityLevel;
+    } else {
+      _activityLevel = state.user.dailyRoutine.contains('Active')
+          ? 'Active / Gym'
+          : (state.user.dailyRoutine.contains('Desk') ? 'Desk Work' : 'Moderate');
     }
   }
 
@@ -70,6 +77,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
         flow: _flow,
         sleepHours: _sleep,
         notes: _notes.text.trim(),
+        activityLevel: _activityLevel,
       ),
     );
     Helpers.showSnack(context, 'Check-in saved. Great job! 💕');
@@ -124,21 +132,96 @@ class _CheckInScreenState extends State<CheckInScreen> {
                       Text('Any symptoms today?',
                           style: AppTextStyles.sectionTitle),
                       const SizedBox(height: 12),
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 10,
+                        alignment: WrapAlignment.start,
                         children: [
                           for (final s in Symptom.checkInSet)
-                            Expanded(
-                              child: Center(
-                                child: SymptomChip(
-                                  label: s.label,
-                                  icon: s.icon,
-                                  size: 42,
-                                  selected: _symptoms.contains(s.id),
-                                  onTap: () => setState(() {
-                                    if (!_symptoms.remove(s.id)) {
-                                      _symptoms.add(s.id);
-                                    }
-                                  }),
+                            SizedBox(
+                              width: 72,
+                              child: SymptomChip(
+                                label: s.label,
+                                icon: s.icon,
+                                size: 42,
+                                selected: _symptoms.contains(s.id),
+                                onTap: () => setState(() {
+                                  if (!_symptoms.remove(s.id)) {
+                                    _symptoms.add(s.id);
+                                  }
+                                }),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+
+                      // ---- Activity / Routine ----
+                      Text('Today\'s Routine & Activity',
+                          style: AppTextStyles.sectionTitle),
+                      const SizedBox(height: 4),
+                      Text('Helps Cherry adapt your pad recommendation for motion & sweat',
+                          style: AppTextStyles.caption),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final act in const [
+                            ('Resting', Icons.hotel_rounded),
+                            ('Desk Work', Icons.chair_rounded),
+                            ('Active / Gym', Icons.fitness_center_rounded),
+                            ('Travel / Walking', Icons.directions_walk_rounded),
+                          ])
+                            GestureDetector(
+                              onTap: () => setState(() => _activityLevel = act.$1),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 180),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: _activityLevel == act.$1
+                                      ? AppColors.crimson
+                                      : Colors.white,
+                                  border: Border.all(
+                                    color: _activityLevel == act.$1
+                                        ? AppColors.crimson
+                                        : AppColors.divider,
+                                  ),
+                                  boxShadow: _activityLevel == act.$1
+                                      ? [
+                                          BoxShadow(
+                                            color: AppColors.crimson.withValues(alpha: 0.25),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          )
+                                        ]
+                                      : null,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      act.$2,
+                                      size: 16,
+                                      color: _activityLevel == act.$1
+                                          ? Colors.white
+                                          : AppColors.crimson,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      act.$1,
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: _activityLevel == act.$1
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: _activityLevel == act.$1
+                                            ? Colors.white
+                                            : AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

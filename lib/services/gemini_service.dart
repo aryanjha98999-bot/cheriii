@@ -50,6 +50,10 @@ class GeminiService {
     buffer.writeln('Age: ${user.age}');
     buffer.writeln('Cycle length: ${user.cycleLength} days');
     buffer.writeln('Period length: ${user.periodLength} days');
+    buffer.writeln('Skin sensitivity: ${user.skinSensitivity}');
+    buffer.writeln('Body type / Hip fit: ${user.bodyType}');
+    buffer.writeln('General movement routine: ${user.dailyRoutine}');
+    buffer.writeln('Flow tendency: ${user.flowTendency}');
     buffer.writeln('Current phase: $phase');
     buffer.writeln('Cycle day: $cycleDay of ${user.cycleLength}');
 
@@ -61,6 +65,7 @@ class GeminiService {
 
     if (entry != null) {
       buffer.writeln('Today\'s flow: ${entry.flow.label}');
+      buffer.writeln('Today\'s activity / routine: ${entry.activityLevel}');
       if (entry.mood != null) {
         buffer.writeln('Today\'s mood: ${entry.mood!.label}');
       }
@@ -335,11 +340,16 @@ class GeminiService {
     required String flowLevel,
     required List<String> symptoms,
     required String userName,
+    String skinSensitivity = 'Normal',
+    String dailyRoutine = 'Moderate',
+    String bodyType = 'Regular',
   }) {
-    return 'In 1–2 warm sentences, explain to $userName why a "$padType" is the '
-        'right choice today. She is in her $phase with $flowLevel flow'
-        '${symptoms.isNotEmpty ? ' and has ${symptoms.join(', ')}' : ''}. '
-        'Be friendly, not clinical. No markdown.';
+    return 'In 1–2 warm, reassuring sentences, explain to $userName why a "$padType" is '
+        'the most comfortable and protective choice for her today. '
+        'She is in her $phase with $flowLevel flow'
+        '${symptoms.isNotEmpty ? ', logged symptoms: ${symptoms.join(', ')}' : ''}, '
+        'skin type: $skinSensitivity, routine today: $dailyRoutine, and body fit: $bodyType. '
+        'Highlight why it prevents rashes, chafing, and leaks. Friendly tone, no markdown.';
   }
 
   // ----------------------------------------------------------------

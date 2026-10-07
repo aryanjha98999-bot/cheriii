@@ -8,6 +8,10 @@ class UserModel {
     required this.cycleLength,
     required this.periodLength,
     required this.lastPeriodStart,
+    this.skinSensitivity = 'Normal',
+    this.bodyType = 'Regular fit',
+    this.dailyRoutine = 'Moderate / Mixed',
+    this.flowTendency = 'Medium balanced',
   });
 
   final String name;
@@ -16,6 +20,10 @@ class UserModel {
   final int cycleLength;
   final int periodLength;
   final DateTime lastPeriodStart;
+  final String skinSensitivity;
+  final String bodyType;
+  final String dailyRoutine;
+  final String flowTendency;
 
   factory UserModel.demo() {
     final now = Helpers.today;
@@ -26,6 +34,10 @@ class UserModel {
       cycleLength: 28,
       periodLength: 5,
       lastPeriodStart: Helpers.addDays(now, -14),
+      skinSensitivity: 'Prone to rashes & chafing',
+      bodyType: 'Curvy / Wide hips',
+      dailyRoutine: 'Active / Gym / Sports',
+      flowTendency: 'Heavy initial days',
     );
   }
 
@@ -38,6 +50,10 @@ class UserModel {
       cycleLength: 28,
       periodLength: 5,
       lastPeriodStart: Helpers.addDays(now, -14),
+      skinSensitivity: 'Normal',
+      bodyType: 'Regular fit',
+      dailyRoutine: 'Moderate / Mixed',
+      flowTendency: 'Medium balanced',
     );
   }
 
@@ -48,6 +64,10 @@ class UserModel {
     int? cycleLength,
     int? periodLength,
     DateTime? lastPeriodStart,
+    String? skinSensitivity,
+    String? bodyType,
+    String? dailyRoutine,
+    String? flowTendency,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -56,6 +76,10 @@ class UserModel {
       cycleLength: cycleLength ?? this.cycleLength,
       periodLength: periodLength ?? this.periodLength,
       lastPeriodStart: lastPeriodStart ?? this.lastPeriodStart,
+      skinSensitivity: skinSensitivity ?? this.skinSensitivity,
+      bodyType: bodyType ?? this.bodyType,
+      dailyRoutine: dailyRoutine ?? this.dailyRoutine,
+      flowTendency: flowTendency ?? this.flowTendency,
     );
   }
 
@@ -113,6 +137,24 @@ class UserModel {
     return 'Luteal Phase';
   }
 
+  /// Personalized Day 1 Pad recommendation computed from her signup baseline profile
+  String get dayOnePadRecommendation {
+    final lowerSkin = skinSensitivity.toLowerCase();
+    final lowerRoutine = dailyRoutine.toLowerCase();
+    final lowerBody = bodyType.toLowerCase();
+    final lowerFlow = flowTendency.toLowerCase();
+
+    if (lowerSkin.contains('rash') || lowerSkin.contains('chaf') || lowerSkin.contains('sensitive')) {
+      return '100% Organic Cotton Rash-Free Pad (Day 1)';
+    } else if (lowerRoutine.contains('active') || lowerRoutine.contains('gym') || lowerRoutine.contains('sport') || lowerFlow.contains('heavy')) {
+      return 'Extra Long XXL Wings Active Leak-Guard (Day 1)';
+    } else if (lowerBody.contains('curvy') || lowerBody.contains('hip')) {
+      return 'Extra Wide Contour Curved Pad with Wings (Day 1)';
+    } else {
+      return 'Ultra-Soft Breathable Day 1 Cotton Pad';
+    }
+  }
+
   Map<String, dynamic> toJson() => {
         'name': name,
         'age': age,
@@ -120,6 +162,10 @@ class UserModel {
         'cycleLength': cycleLength,
         'periodLength': periodLength,
         'lastPeriodStart': Helpers.dayKey(lastPeriodStart),
+        'skinSensitivity': skinSensitivity,
+        'bodyType': bodyType,
+        'dailyRoutine': dailyRoutine,
+        'flowTendency': flowTendency,
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -141,6 +187,10 @@ class UserModel {
       cycleLength: (json['cycleLength'] as int?) ?? fallback.cycleLength,
       periodLength: (json['periodLength'] as int?) ?? fallback.periodLength,
       lastPeriodStart: parsedDate,
+      skinSensitivity: (json['skinSensitivity'] as String?) ?? fallback.skinSensitivity,
+      bodyType: (json['bodyType'] as String?) ?? fallback.bodyType,
+      dailyRoutine: (json['dailyRoutine'] as String?) ?? fallback.dailyRoutine,
+      flowTendency: (json['flowTendency'] as String?) ?? fallback.flowTendency,
     );
   }
 }

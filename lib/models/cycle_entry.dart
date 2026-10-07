@@ -9,6 +9,7 @@ class CycleEntry {
     this.symptoms = const <String>{},
     this.sleepHours = 7,
     this.notes = '',
+    this.activityLevel = 'Moderate',
   });
 
   final DateTime date;
@@ -17,6 +18,7 @@ class CycleEntry {
   final Set<String> symptoms;
   final double sleepHours;
   final String notes;
+  final String activityLevel;
 
   bool get isPeriodFlow =>
       flow == FlowLevel.light ||
@@ -30,6 +32,7 @@ class CycleEntry {
     Set<String>? symptoms,
     double? sleepHours,
     String? notes,
+    String? activityLevel,
   }) {
     return CycleEntry(
       date: date,
@@ -38,6 +41,7 @@ class CycleEntry {
       symptoms: symptoms ?? this.symptoms,
       sleepHours: sleepHours ?? this.sleepHours,
       notes: notes ?? this.notes,
+      activityLevel: activityLevel ?? this.activityLevel,
     );
   }
 
@@ -48,6 +52,7 @@ class CycleEntry {
         'symptoms': symptoms.toList(),
         'sleep': sleepHours,
         'notes': notes,
+        'activityLevel': activityLevel,
       };
 
   factory CycleEntry.fromJson(Map<String, dynamic> json) {
@@ -69,6 +74,7 @@ class CycleEntry {
           .toSet(),
       sleepHours: ((json['sleep'] as num?) ?? 7).toDouble(),
       notes: (json['notes'] as String?) ?? '',
+      activityLevel: (json['activityLevel'] as String?) ?? 'Moderate',
     );
   }
 }

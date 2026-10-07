@@ -23,7 +23,7 @@ class _AiJournalScreenState extends State<AiJournalScreen> {
   JournalEntry? _todayJournal;
   List<JournalEntry> _pastJournals = [];
   bool _loading = true;
-  bool _showPadDetail = false;
+  bool _showPadDetail = true;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _AiJournalScreenState extends State<AiJournalScreen> {
                         if (_pastJournals.isNotEmpty) ...[
                           Text('Recent Journals',
                               style: AppTextStyles.sectionTitle
-                                  .copyWith(fontSize: 15)),
+                                   .copyWith(fontSize: 15)),
                           const SizedBox(height: 10),
                           ..._pastJournals.map(
                             (j) => Padding(
@@ -227,26 +227,32 @@ class _PadRecommendationDetailCard extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
                       color: AppColors.tintPink,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.water_drop_rounded,
-                        color: AppColors.rose, size: 22),
+                        color: AppColors.rose, size: 24),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Pad Recommendation',
-                          style: AppTextStyles.label.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 11,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'RECOMMENDED PAD FOR YOU',
+                              style: AppTextStyles.label.copyWith(
+                                color: AppColors.rose,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -254,6 +260,7 @@ class _PadRecommendationDetailCard extends StatelessWidget {
                           style: AppTextStyles.sectionTitle.copyWith(
                             fontSize: 14,
                             color: AppColors.crimson,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -283,7 +290,29 @@ class _PadRecommendationDetailCard extends StatelessWidget {
                   const _Divider(),
                   const SizedBox(height: 12),
 
-                  // Reason
+                  // Absorbency badge & info
+                  Row(
+                    children: [
+                      _Badge(
+                        label: 'Absorbency: ${recommendation.absorbency}',
+                        color: AppColors.tintPink,
+                        textColor: AppColors.crimson,
+                      ),
+                      const Spacer(),
+                      Text(
+                        'Personalized Fit',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Primary Reason
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -293,7 +322,7 @@ class _PadRecommendationDetailCard extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.info_outline_rounded,
+                        const Icon(Icons.favorite_rounded,
                             size: 16, color: AppColors.rose),
                         const SizedBox(width: 8),
                         Expanded(
@@ -302,6 +331,7 @@ class _PadRecommendationDetailCard extends StatelessWidget {
                             style: AppTextStyles.body.copyWith(
                               fontSize: 12.5,
                               height: 1.5,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -309,29 +339,78 @@ class _PadRecommendationDetailCard extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  // Reasons Breakdown
+                  if (recommendation.reasonsBreakdown.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    Text(
+                      'Why This Type Was Picked For You:',
+                      style: AppTextStyles.label.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.crimson,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...recommendation.reasonsBreakdown.map((r) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 2),
+                                child: Icon(Icons.check_circle_rounded,
+                                    size: 14, color: AppColors.rose),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  r,
+                                  style: AppTextStyles.body.copyWith(
+                                    fontSize: 12.5,
+                                    height: 1.45,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ],
 
-                  // Absorbency badge
+                  const SizedBox(height: 16),
+                  const _Divider(),
+                  const SizedBox(height: 12),
+
+                  // Products from different companies
                   Row(
                     children: [
-                      _Badge(
-                        label: 'Absorbency: ${recommendation.absorbency}',
-                        color: AppColors.tintPink,
-                        textColor: AppColors.crimson,
+                      Text(
+                        'Different Companies • Same Pad Type',
+                        style: AppTextStyles.label.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        'Tap to buy',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.rose,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 14),
-
+                  const SizedBox(height: 4),
                   Text(
-                    'Suggested Products',
-                    style: AppTextStyles.label.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                    'Browse matching products from top brands tailored to this exact specification:',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
                   ...recommendation.products.map(
                     (p) => _ProductTile(product: p),
@@ -341,7 +420,7 @@ class _PadRecommendationDetailCard extends StatelessWidget {
 
                   // Search button
                   PrimaryButton(
-                    label: 'Find These Near You →',
+                    label: 'Search More Brands Online →',
                     height: 44,
                     onPressed: () => _searchOnline(
                       context,
@@ -484,56 +563,122 @@ class _ProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppColors.tintPink,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.water_drop_outlined,
-                size: 16, color: AppColors.rose),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.tintPink.withOpacity(0.8), width: 1),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _openBuyLink(context, product),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.tintPink,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        product.brand,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.crimson,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 10.5,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.rose.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Buy / View',
+                            style: AppTextStyles.caption.copyWith(
+                              color: AppColors.crimson,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          const Icon(Icons.open_in_new_rounded,
+                              size: 11, color: AppColors.crimson),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
                 Text(
                   product.name,
                   style: AppTextStyles.body.copyWith(
                     fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  '${product.brand} • ${product.type}',
-                  style: AppTextStyles.caption.copyWith(fontSize: 11),
+                  product.type,
+                  style: AppTextStyles.caption.copyWith(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
+                if (product.features.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: product.features.map((feat) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF7F7FA),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AppColors.divider, width: 0.8),
+                        ),
+                        child: Text(
+                          feat,
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ],
             ),
           ),
-          InkWell(
-            borderRadius: BorderRadius.circular(8),
-            onTap: () => _searchProduct(context, product),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.open_in_new_rounded,
-                  size: 16, color: AppColors.rose),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Future<void> _searchProduct(BuildContext context, PadProduct product) async {
-    final query = Uri.encodeComponent('buy ${product.name} ${product.brand}');
-    final url = Uri.parse('https://www.google.com/search?q=$query');
+  Future<void> _openBuyLink(BuildContext context, PadProduct product) async {
+    final urlStr = product.buyUrl.isNotEmpty
+        ? product.buyUrl
+        : 'https://www.google.com/search?q=${Uri.encodeComponent('buy ${product.name} ${product.brand}')}';
+    final url = Uri.parse(urlStr);
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }

@@ -8,6 +8,7 @@ import '../../core/constants/strings.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/helpers.dart';
 import '../../models/app_state.dart';
+import '../../services/ai_journal_service.dart';
 import '../../widgets/app_background.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/cycle_card.dart';
@@ -232,6 +233,13 @@ class HomeScreen extends StatelessWidget {
                 total: state.user.cycleLength,
                 onViewDetails: () => _showPhaseDetails(context, state),
               ),
+              const SizedBox(height: 14),
+
+              // ---- Today's Pad Recommendation & AI Journal ----
+              _PadRecommendationHomeCard(
+                recommendation: AiJournalService().recommendPadForState(state),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.journal),
+              ),
               const SizedBox(height: 20),
 
               // ---- Today's check-in ----
@@ -370,6 +378,117 @@ class _BellButton extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PadRecommendationHomeCard extends StatelessWidget {
+  const _PadRecommendationHomeCard({
+    required this.recommendation,
+    required this.onTap,
+  });
+
+  final PadRecommendation recommendation;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.tintPink,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.water_drop_rounded,
+                    color: AppColors.rose, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TODAY\'S RECOMMENDED PAD',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.rose,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      recommendation.padType,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.sectionTitle.copyWith(
+                        fontSize: 13.5,
+                        color: AppColors.crimson,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded,
+                  color: AppColors.rose, size: 22),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            recommendation.reason,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.body.copyWith(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.roseTint,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_bag_outlined,
+                    size: 14, color: AppColors.crimson),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    '${recommendation.products.length} brands (Carmesi, Nua, Stayfree...) match this type',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.crimson,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+                Text(
+                  'View →',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.rose,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

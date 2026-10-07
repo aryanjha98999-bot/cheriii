@@ -155,6 +155,7 @@ class AppState extends ChangeNotifier {
       symptoms: Set<String>.from(entry.symptoms),
       sleepHours: entry.sleepHours,
       notes: entry.notes,
+      activityLevel: entry.activityLevel,
     );
 
     // Save locally
@@ -510,6 +511,11 @@ class AppState extends ChangeNotifier {
       final resolvedName =
           (name != null && name.isNotEmpty) ? name : emailName;
 
+      final skinSensitivity = profile['skin_sensitivity'] as String?;
+      final bodyType = profile['body_type'] as String?;
+      final dailyRoutine = profile['daily_routine'] as String?;
+      final flowTendency = profile['flow_tendency'] as String?;
+
       user = UserModel(
         name: resolvedName,
         age: age ?? user.age,
@@ -519,6 +525,18 @@ class AppState extends ChangeNotifier {
         cycleLength: cycleLength ?? user.cycleLength,
         periodLength: periodLength ?? user.periodLength,
         lastPeriodStart: lastPeriodStart ?? user.lastPeriodStart,
+        skinSensitivity: (skinSensitivity != null && skinSensitivity.isNotEmpty)
+            ? skinSensitivity
+            : user.skinSensitivity,
+        bodyType: (bodyType != null && bodyType.isNotEmpty)
+            ? bodyType
+            : user.bodyType,
+        dailyRoutine: (dailyRoutine != null && dailyRoutine.isNotEmpty)
+            ? dailyRoutine
+            : user.dailyRoutine,
+        flowTendency: (flowTendency != null && flowTendency.isNotEmpty)
+            ? flowTendency
+            : user.flowTendency,
       );
 
       isProfileLoaded = true;

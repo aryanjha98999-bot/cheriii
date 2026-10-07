@@ -18,6 +18,12 @@ class Symptom {
       Symptom('bloating', 'Bloating', Icons.bubble_chart_outlined);
   static const Symptom fatigue =
       Symptom('fatigue', 'Fatigue', Icons.bedtime_outlined);
+  static const Symptom rashes =
+      Symptom('rashes', 'Rashes', Icons.healing_rounded);
+  static const Symptom chafing =
+      Symptom('chafing', 'Chafing', Icons.directions_walk_rounded);
+  static const Symptom backache =
+      Symptom('backache', 'Backache', Icons.accessibility_new_rounded);
 
   static const List<Symptom> calendarSet = [
     cramps,
@@ -25,14 +31,18 @@ class Symptom {
     headache,
     acne,
     bloating,
+    rashes,
   ];
 
   static const List<Symptom> checkInSet = [
     cramps,
     bloating,
+    rashes,
+    chafing,
     headache,
-    acne,
     fatigue,
+    acne,
+    backache,
   ];
 
   static const List<Symptom> all = [
@@ -42,6 +52,9 @@ class Symptom {
     acne,
     bloating,
     fatigue,
+    rashes,
+    chafing,
+    backache,
   ];
 
   static Symptom byId(String id) =>

@@ -203,6 +203,10 @@ class CheriApp extends StatelessWidget {
         // Profile setup
         AppRoutes.profileSetup: (_) =>
             const ProfileSetupScreen(),
+
+        // AI Journal & Pad Recommendations
+        AppRoutes.journal: (_) =>
+            const AiJournalScreen(),
       },
     );
   }

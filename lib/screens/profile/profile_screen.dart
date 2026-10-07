@@ -536,6 +536,10 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   late final TextEditingController _age =
       TextEditingController(text: '${widget.user.age}');
   late String _selectedAvatar = widget.user.avatarAsset;
+  late String _skinSensitivity = widget.user.skinSensitivity;
+  late String _bodyType = widget.user.bodyType;
+  late String _dailyRoutine = widget.user.dailyRoutine;
+  late String _flowTendency = widget.user.flowTendency;
 
   String? _nameError;
   String? _ageError;
@@ -570,6 +574,10 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       name: name,
       age: age,
       avatarAsset: _selectedAvatar,
+      skinSensitivity: _skinSensitivity,
+      bodyType: _bodyType,
+      dailyRoutine: _dailyRoutine,
+      flowTendency: _flowTendency,
     );
 
     context.read<AppState>().updateUser(updated);
@@ -655,6 +663,81 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                   errorText: _ageError,
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Skin Sensitivity & Rashes
+              Text('Skin Sensitivity & Rashes', style: AppTextStyles.label),
+              const SizedBox(height: 6),
+              DropdownButtonFormField<String>(
+                value: _skinSensitivity,
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(value: 'Prone to rashes & chafing', child: Text('Prone to rashes & chafing')),
+                  DropdownMenuItem(value: 'Sensitive skin', child: Text('Sensitive skin')),
+                  DropdownMenuItem(value: 'Normal', child: Text('Normal')),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _skinSensitivity = v);
+                },
+                decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+              ),
+              const SizedBox(height: 12),
+
+              // Body Type
+              Text('Body Type & Fit', style: AppTextStyles.label),
+              const SizedBox(height: 6),
+              DropdownButtonFormField<String>(
+                value: _bodyType,
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(value: 'Curvy / Wide hips', child: Text('Curvy / Wide hips')),
+                  DropdownMenuItem(value: 'Athletic / Tall', child: Text('Athletic / Tall')),
+                  DropdownMenuItem(value: 'Petite / Slim', child: Text('Petite / Slim')),
+                  DropdownMenuItem(value: 'Regular fit', child: Text('Regular fit')),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _bodyType = v);
+                },
+                decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+              ),
+              const SizedBox(height: 12),
+
+              // Daily Routine
+              Text('Daily Movement Routine', style: AppTextStyles.label),
+              const SizedBox(height: 6),
+              DropdownButtonFormField<String>(
+                value: _dailyRoutine,
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(value: 'Active / Gym / Sports', child: Text('Active / Gym / Sports')),
+                  DropdownMenuItem(value: 'Desk job / Long sitting', child: Text('Desk job / Long sitting')),
+                  DropdownMenuItem(value: 'On feet / Travelling', child: Text('On feet / Travelling')),
+                  DropdownMenuItem(value: 'Moderate / Mixed', child: Text('Moderate / Mixed')),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _dailyRoutine = v);
+                },
+                decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+              ),
+              const SizedBox(height: 12),
+
+              // Flow Tendency
+              Text('Initial Flow Tendency', style: AppTextStyles.label),
+              const SizedBox(height: 6),
+              DropdownButtonFormField<String>(
+                value: _flowTendency,
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(value: 'Heavy initial days', child: Text('Heavy initial days')),
+                  DropdownMenuItem(value: 'Medium balanced', child: Text('Medium balanced')),
+                  DropdownMenuItem(value: 'Light / Spotting prone', child: Text('Light / Spotting prone')),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _flowTendency = v);
+                },
+                decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+              ),
+
               const SizedBox(height: 20),
               PrimaryButton(label: 'Save Changes', height: 48, onPressed: _save),
             ],
