@@ -15,6 +15,7 @@ import '../../widgets/cycle_ring.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/safe_asset_image.dart';
 import '../../widgets/symptom_chip.dart';
+import '../../widgets/user_avatar.dart';
 
 const Map<String, String> _phaseInfo = {
   'Menstrual Phase':
@@ -134,6 +135,15 @@ class HomeScreen extends StatelessWidget {
               // ---- Header ----
               Row(
                 children: [
+                  GestureDetector(
+                    onTap: () => context.read<AppState>().setTab(4),
+                    child: UserAvatar(
+                      avatar: state.user.avatarAsset,
+                      size: 46,
+                      borderWidth: 1.8,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,18 +178,24 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(AppStrings.periodMayStart,
-                          style: AppTextStyles.caption
-                              .copyWith(fontSize: 12)),
-                      const SizedBox(height: 2),
                       Text(
-                        _countdown(state.daysUntilNextPeriod),
-                        style: AppTextStyles.bigNumber
-                            .copyWith(fontSize: 38),
+                        state.phase == 'Menstrual Phase'
+                            ? 'Period Day'
+                            : AppStrings.periodMayStart,
+                        style: AppTextStyles.caption.copyWith(fontSize: 12),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        Helpers.shortDate(state.nextPeriodDate),
+                        state.phase == 'Menstrual Phase'
+                            ? '${state.cycleDay}'
+                            : _countdown(state.daysUntilNextPeriod),
+                        style: AppTextStyles.bigNumber.copyWith(fontSize: 38),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        state.phase == 'Menstrual Phase'
+                            ? 'of ${state.user.periodLength} days'
+                            : Helpers.shortDate(state.nextPeriodDate),
                         style: AppTextStyles.body.copyWith(fontSize: 12.5),
                       ),
                     ],
@@ -189,9 +205,9 @@ class HomeScreen extends StatelessWidget {
               Center(
                 child: Transform.translate(
                   offset: const Offset(0, -12),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.favorite_rounded,
                           size: 12, color: AppColors.crimson),
                       SizedBox(width: 6),

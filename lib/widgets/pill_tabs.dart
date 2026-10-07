@@ -38,7 +38,7 @@ class PillTabs extends StatelessWidget {
               decoration: BoxDecoration(
                 color: selected
                     ? AppColors.crimson
-                    : Colors.white.withOpacity(0.85),
+                    : Colors.white.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(20),
                 border: selected
                     ? null

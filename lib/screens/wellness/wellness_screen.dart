@@ -364,7 +364,7 @@ class _BreathingCircleState extends State<_BreathingCircle>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.crimson.withOpacity(0.25),
+                        color: AppColors.crimson.withValues(alpha: 0.25),
                         blurRadius: 20,
                       ),
                     ],

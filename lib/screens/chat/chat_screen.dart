@@ -9,173 +9,10 @@ import '../../core/constants/strings.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/helpers.dart';
 import '../../models/app_state.dart';
+import '../../services/ai_chat_service.dart';
+import '../../services/gemini_service.dart';
 import '../../widgets/ai_message_card.dart';
 import '../../widgets/app_background.dart';
-
-/// Keyword-based mock replies for Cherry AI.
-class MockChatService {
-  MockChatService._();
-
-  static const String _doctor =
-      "If the pain is severe or unusual, it's a good idea to talk to a doctor.";
-
-  static ChatMessage reply(String input, {String name = 'there'}) {
-    final q = input.toLowerCase();
-    bool has(List<String> words) => words.any(q.contains);
-
-    ChatMessage msg(
-      String text, {
-      List<String> bullets = const [],
-      String? outro,
-    }) =>
-        ChatMessage(
-          text: text,
-          isUser: false,
-          time: DateTime.now(),
-          bullets: bullets,
-          outro: outro,
-        );
-
-    if (RegExp(r'^(hi|hello|hey)\b').hasMatch(q.trim())) {
-      return msg(
-        'Hi $name! 💕 I can help with cramps, your cycle, food, mood and '
-        'skincare. What would you like to know?',
-      );
-    }
-
-    if (has(['thank'])) {
-      return msg("You're so welcome, $name! 💕 I'm here whenever you need me.");
-    }
-
-    if (has(['why']) && has(['cramp'])) {
-      return msg(
-        'Cramps happen when your uterus contracts to shed its lining. '
-        'Chemicals called prostaglandins trigger those contractions, so higher '
-        'levels can mean stronger cramps.',
-        bullets: const [
-          "They're often strongest in the first 1-2 days",
-          'Stress, caffeine and low sleep can make them worse',
-          'Warmth and gentle movement usually ease them',
-        ],
-        outro: _doctor,
-      );
-    }
-
-    if (has(['cramp', 'pain', 'ache'])) {
-      return msg(
-        "I'm sorry you're feeling uncomfortable 💕\n"
-        'Here are a few things that may help:',
-        bullets: const [
-          'Use a warm heating pad',
-          'Try gentle stretches or yoga',
-          'Stay hydrated',
-          'Have a warm drink (like herbal tea)',
-          'Get some rest',
-        ],
-        outro: _doctor,
-      );
-    }
-
-    if (has(['regular', 'irregular', 'late', 'cycle length', 'my cycle'])) {
-      return msg(
-        'Cycles between 21 and 35 days are generally considered regular, and a '
-        'few days of variation is normal. Your logged cycles average about 29 '
-        'days, which looks steady. ✨',
-        outro: 'Keep logging for a few more months and your predictions will '
-            'get even more accurate.',
-      );
-    }
-
-    if (has(['food', 'eat', 'diet', 'nutrition', 'craving'])) {
-      return msg(
-        'Eating well can really change how you feel through your cycle. 🥗',
-        bullets: const [
-          'Iron-rich foods like spinach, lentils and beans',
-          'Magnesium sources like nuts, seeds and dark chocolate',
-          'Fruits and veggies for fibre and vitamins',
-          'Water-rich foods like cucumber and watermelon',
-          'Go easy on very salty, sugary or processed snacks',
-        ],
-        outro: 'Small, regular meals can also keep your energy steady.',
-      );
-    }
-
-    if (has(['mood', 'swing', 'sad', 'anxi', 'irritab', 'stress'])) {
-      return msg(
-        'Mood swings are very common because hormones like estrogen and '
-        'progesterone shift through your cycle. 💕',
-        bullets: const [
-          'Try light exercise or a walk outside',
-          'Keep a regular sleep routine',
-          'Log your mood to spot patterns',
-          'Talk to someone you trust',
-        ],
-        outro: 'If low mood feels heavy or lasts a long time, please consider '
-            'talking to a doctor or counsellor.',
-      );
-    }
-
-    if (has(['skin', 'acne', 'pimple', 'breakout'])) {
-      return msg(
-        'Hormonal changes can affect your skin, especially before your '
-        'period. ✨',
-        bullets: const [
-          'Wash your face gently twice a day',
-          'Use a non-comedogenic moisturiser',
-          'Avoid picking or squeezing breakouts',
-          'Drink plenty of water and get enough sleep',
-        ],
-        outro: 'If acne is painful or persistent, a dermatologist can help.',
-      );
-    }
-
-    if (has(['headache', 'migraine'])) {
-      return msg(
-        'Headaches around your period are often linked to hormone changes. '
-        'Here is what may help:',
-        bullets: const [
-          'Rest in a quiet, dim room',
-          'Drink a glass of water',
-          'Try a cool or warm compress',
-          'Do gentle neck and shoulder stretches',
-        ],
-        outro: 'If headaches are frequent or very intense, check in with a '
-            'doctor.',
-      );
-    }
-
-    if (has(['bloat'])) {
-      return msg(
-        'Bloating is common before and during your period. Some ideas:',
-        bullets: const [
-          'Sip peppermint or ginger tea',
-          'Cut back on salty foods',
-          'Go for a short, easy walk',
-          'Wear comfy, loose clothing',
-        ],
-      );
-    }
-
-    if (has(['sleep', 'tired', 'fatigue', 'energy'])) {
-      return msg(
-        'Energy often dips in the days before your period. Be kind to '
-        'yourself 💕',
-        bullets: const [
-          'Aim for a consistent bedtime',
-          'Have a light snack with protein and iron',
-          'Take short breaks and stretch',
-          'Limit caffeine late in the day',
-        ],
-      );
-    }
-
-    return msg(
-      "Thanks for sharing, $name 💕 I'm still learning, but I can help with "
-      'cramps, cycle regularity, food, mood and skincare. Tap a suggestion '
-      'below or tell me a bit more about how you feel.',
-    );
-  }
-}
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -188,45 +25,33 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
   final FocusNode _focus = FocusNode();
+  final AiChatService _aiChatService = AiChatService();
+  final GeminiService _gemini = GeminiService();
 
-  late List<ChatMessage> _messages = _seed();
+  late List<ChatMessage> _messages = [];
   bool _typing = false;
   bool _inputFocused = false;
-  Timer? _timer;
+  StreamSubscription<String>? _streamSub;
 
-  /// Pre-filled conversation that matches the design showcase.
-  static List<ChatMessage> _seed() => [
-        ChatMessage(
-          text: AppStrings.botGreeting,
-          isUser: false,
-          time: DateTime(2024, 10, 8, 9, 41),
-        ),
-        ChatMessage(
-          text: 'I have cramps today. What can I do?',
-          isUser: true,
-          time: DateTime(2024, 10, 8, 9, 42),
-        ),
-        ChatMessage(
-          text: "I'm sorry you're feeling uncomfortable 💕\n"
-              'Here are a few things that may help:',
-          isUser: false,
-          time: DateTime(2024, 10, 8, 9, 42),
-          bullets: const [
-            'Use a warm heating pad',
-            'Try gentle stretches or yoga',
-            'Stay hydrated',
-            'Have a warm drink (like herbal tea)',
-            'Get some rest',
-          ],
-          outro:
-              "If the pain is severe or unusual, it's a good idea to talk to "
-              'a doctor.',
-        ),
-      ];
+  // Conversation history for Gemini multi-turn context (last 10 turns)
+  final List<Map<String, dynamic>> _history = [];
 
   @override
   void initState() {
     super.initState();
+    final user = context.read<AppState>().user;
+    _messages = [
+      ChatMessage(
+        text: "Hey ${user.name}! 💕\nI'm Cherry, your personal wellness companion. "
+            'I know your cycle, your symptoms and how you have been feeling. '
+            'Ask me anything about your period, mood, food or self-care.',
+        isUser: false,
+        time: DateTime.now().subtract(const Duration(minutes: 1)),
+      ),
+    ];
+
+    _loadHistory();
+
     _focus.addListener(() {
       if (mounted) setState(() => _inputFocused = _focus.hasFocus);
     });
@@ -237,9 +62,27 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Future<void> _loadHistory() async {
+    final state = context.read<AppState>();
+    if (state.isLoggedIn) {
+      final history = await _aiChatService.loadHistory();
+      if (mounted && history.isNotEmpty) {
+        setState(() {
+          _messages = history;
+          // Rebuild Gemini history from loaded messages
+          _history.clear();
+          for (final m in history) {
+            _history.add({'isUser': m.isUser, 'text': m.text});
+          }
+        });
+        _scrollToEnd();
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _timer?.cancel();
+    _streamSub?.cancel();
     _input.dispose();
     _scroll.dispose();
     _focus.dispose();
@@ -261,34 +104,100 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = raw.trim();
     if (text.isEmpty || _typing) return;
     _input.clear();
+    FocusScope.of(context).unfocus();
+
+    final state = context.read<AppState>();
+
+    // Add user message
+    final userMsg = ChatMessage(text: text, isUser: true, time: DateTime.now());
     setState(() {
-      _messages.add(
-        ChatMessage(text: text, isUser: true, time: DateTime.now()),
-      );
+      _messages.add(userMsg);
       _typing = true;
     });
     _scrollToEnd();
 
-    _timer?.cancel();
-    _timer = Timer(const Duration(milliseconds: 1100), () {
-      if (!mounted) return;
-      final name = context.read<AppState>().user.name;
-      setState(() {
-        _messages.add(MockChatService.reply(text, name: name));
-        _typing = false;
-      });
-      _scrollToEnd();
-    });
+    unawaited(_aiChatService.saveMessage(isUser: true, message: text));
+
+    // Add a placeholder bot message to stream into
+    final botMsg = ChatMessage(text: '', isUser: false, time: DateTime.now());
+    setState(() => _messages.add(botMsg));
+
+    // Build history snapshot (last 10 turns, excluding the empty placeholder)
+    final historySnapshot = List<Map<String, dynamic>>.from(_history);
+
+    final streamBuffer = StringBuffer();
+
+    _streamSub?.cancel();
+    _streamSub = _gemini
+        .streamChat(
+          history: historySnapshot,
+          userMessage: text,
+          state: state,
+        )
+        .listen(
+      (chunk) {
+        streamBuffer.write(chunk);
+        if (!mounted) return;
+        setState(() {
+          _messages[_messages.length - 1] = ChatMessage(
+            text: streamBuffer.toString(),
+            isUser: false,
+            time: botMsg.time,
+          );
+        });
+        _scrollToEnd();
+      },
+      onDone: () {
+        if (!mounted) return;
+        final finalText = streamBuffer.toString();
+        setState(() {
+          _typing = false;
+          _messages[_messages.length - 1] = ChatMessage(
+            text: finalText.isEmpty
+                ? "I'm here for you 💕 Try asking about cramps, mood, food or your cycle."
+                : finalText,
+            isUser: false,
+            time: botMsg.time,
+          );
+        });
+        // Update history for next turn
+        _history.add({'isUser': true, 'text': text});
+        _history.add({'isUser': false, 'text': finalText});
+        // Keep last 10 turns (20 messages)
+        while (_history.length > 20) {
+          _history.removeAt(0);
+        }
+        unawaited(_aiChatService.saveMessage(
+          isUser: false,
+          message: finalText,
+        ));
+      },
+      onError: (dynamic e) {
+        if (!mounted) return;
+        setState(() {
+          _typing = false;
+          _messages[_messages.length - 1] = ChatMessage(
+            text: 'Could not connect to Cherry AI. Please check your internet 💕',
+            isUser: false,
+            time: botMsg.time,
+          );
+        });
+      },
+    );
   }
 
   void _clear() {
-    _timer?.cancel();
+    _streamSub?.cancel();
     final name = context.read<AppState>().user.name;
+    unawaited(_aiChatService.clearHistory());
+    _history.clear();
     setState(() {
       _typing = false;
       _messages = [
         ChatMessage(
-          text: AppStrings.botGreeting.replaceFirst('Aarohi', name),
+          text: "Hey $name! 💕\nI'm Cherry, your personal wellness companion. "
+              'I know your cycle, your symptoms and how you have been feeling. '
+              'Ask me anything about your period, mood, food or self-care.',
           isUser: false,
           time: DateTime.now(),
         ),
@@ -411,7 +320,7 @@ class _SuggestionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withOpacity(0.9),
+      color: Colors.white.withValues(alpha: 0.9),
       shape: const StadiumBorder(side: BorderSide(color: AppColors.roseLight)),
       child: InkWell(
         customBorder: const StadiumBorder(),
@@ -499,7 +408,7 @@ class _InputBar extends StatelessWidget {
                       gradient: AppColors.buttonGradient,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.crimson.withOpacity(0.28),
+                          color: AppColors.crimson.withValues(alpha: 0.28),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -550,9 +459,9 @@ class _TypingBubbleState extends State<_TypingBubble>
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(6),
                 topRight: Radius.circular(18),
                 bottomLeft: Radius.circular(18),

@@ -42,7 +42,7 @@ class PrimaryButton extends StatelessWidget {
           borderRadius: radius,
           boxShadow: [
             BoxShadow(
-              color: AppColors.crimson.withOpacity(0.28),
+              color: AppColors.crimson.withValues(alpha: 0.28),
               blurRadius: 14,
               offset: const Offset(0, 6),
             ),

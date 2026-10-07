@@ -32,7 +32,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
 
   Mood? _mood;
   Set<String> _symptoms = <String>{};
-  FlowLevel _flow = FlowLevel.medium;
+  FlowLevel _flow = FlowLevel.none;
   double _sleep = 7;
 
   @override
@@ -152,7 +152,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                       Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(color: AppColors.divider),
                         ),

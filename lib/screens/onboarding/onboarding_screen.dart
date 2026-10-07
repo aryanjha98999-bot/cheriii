@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/constants/strings.dart';
 import '../../core/theme/app_theme.dart';
-import '../../models/app_state.dart';
 import '../../widgets/app_background.dart';
 import '../../widgets/petals.dart';
 import '../../widgets/primary_button.dart';
@@ -57,9 +55,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  // After onboarding, go to account creation.
+  // We intentionally do NOT call completeOnboarding() here.
   void _finish() {
-    context.read<AppState>().completeOnboarding();
-    Navigator.pushReplacementNamed(context, AppRoutes.main);
+    Navigator.pushReplacementNamed(
+      context,
+      AppRoutes.signUp,
+    );
   }
 
   void _next() {
@@ -89,19 +91,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     opacity: _isLast ? 0 : 1,
                     child: TextButton(
                       onPressed: _isLast ? null : _finish,
-                      child: Text('Skip', style: AppTextStyles.link),
+                      child: Text(
+                        'Skip',
+                        style: AppTextStyles.link,
+                      ),
                     ),
                   ),
                 ),
               ),
+
               Expanded(
                 child: PageView.builder(
                   controller: _controller,
                   itemCount: _pages.length,
-                  onPageChanged: (i) => setState(() => _index = i),
-                  itemBuilder: (context, i) => _PageBody(page: _pages[i]),
+                  onPageChanged: (i) {
+                    setState(() => _index = i);
+                  },
+                  itemBuilder: (context, i) {
+                    return _PageBody(
+                      page: _pages[i],
+                    );
+                  },
                 ),
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -120,10 +133,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                 ],
               ),
+
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                padding: const EdgeInsets.fromLTRB(
+                  24,
+                  24,
+                  24,
+                  24,
+                ),
                 child: PrimaryButton(
-                  label: _isLast ? AppStrings.getStarted : 'Next',
+                  label: _isLast
+                      ? AppStrings.getStarted
+                      : 'Next',
                   trailingIcon: Icons.arrow_forward_rounded,
                   onPressed: _next,
                 ),
@@ -137,7 +158,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 class _PageBody extends StatelessWidget {
-  const _PageBody({required this.page});
+  const _PageBody({
+    required this.page,
+  });
 
   final _OnboardingPage page;
 
@@ -145,7 +168,9 @@ class _PageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 32,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -159,6 +184,7 @@ class _PageBody extends StatelessWidget {
                     size: Size(260, 260),
                     painter: _IllustrationPainter(),
                   ),
+
                   Container(
                     width: 180,
                     height: 180,
@@ -167,32 +193,47 @@ class _PageBody extends StatelessWidget {
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [AppColors.rose, AppColors.crimsonDark],
+                        colors: [
+                          AppColors.rose,
+                          AppColors.crimsonDark,
+                        ],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.crimson.withOpacity(0.28),
+                          color: AppColors.crimson.withValues(
+                            alpha: 0.28,
+                          ),
                           blurRadius: 24,
                           offset: const Offset(0, 10),
                         ),
                       ],
                     ),
-                    child: Icon(page.icon, size: 84, color: Colors.white),
+                    child: Icon(
+                      page.icon,
+                      size: 84,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 28),
+
             Text(
               page.title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headline,
             ),
+
             const SizedBox(height: 12),
+
             Text(
               page.body,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMuted.copyWith(fontSize: 14.5),
+              style: AppTextStyles.bodyMuted.copyWith(
+                fontSize: 14.5,
+              ),
             ),
           ],
         ),
@@ -208,17 +249,53 @@ class _IllustrationPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
+
     canvas.drawCircle(
       Offset(w / 2, h / 2),
       w * 0.48,
-      Paint()..color = AppColors.roseLight.withOpacity(0.25),
+      Paint()
+        ..color = AppColors.roseLight.withValues(
+          alpha: 0.25,
+        ),
     );
-    paintBlossom(canvas, Offset(w * 0.12, h * 0.26), w * 0.08, 0.3, 0.85);
-    paintBlossom(canvas, Offset(w * 0.90, h * 0.20), w * 0.06, 1.1, 0.75);
-    paintBlossom(canvas, Offset(w * 0.86, h * 0.82), w * 0.09, 0.7, 0.85);
-    paintBlossom(canvas, Offset(w * 0.16, h * 0.84), w * 0.05, 2.0, 0.7);
+
+    paintBlossom(
+      canvas,
+      Offset(w * 0.12, h * 0.26),
+      w * 0.08,
+      0.3,
+      0.85,
+    );
+
+    paintBlossom(
+      canvas,
+      Offset(w * 0.90, h * 0.20),
+      w * 0.06,
+      1.1,
+      0.75,
+    );
+
+    paintBlossom(
+      canvas,
+      Offset(w * 0.86, h * 0.82),
+      w * 0.09,
+      0.7,
+      0.85,
+    );
+
+    paintBlossom(
+      canvas,
+      Offset(w * 0.16, h * 0.84),
+      w * 0.05,
+      2.0,
+      0.7,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(
+    covariant CustomPainter oldDelegate,
+  ) {
+    return false;
+  }
 }

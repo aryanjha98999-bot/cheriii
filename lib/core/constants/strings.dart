@@ -10,7 +10,11 @@ class AppRoutes {
   static const String reminders = '/reminders';
   static const String appLock = '/app-lock';
   static const String settings = '/settings';
-}
+   static const String login = '/login';
+  static const String signUp = '/signup';
+  static const String profileSetup = '/profile-setup';
+
+  static const String journal = '/journal';
 
 class AppAssets {
   AppAssets._();

@@ -15,16 +15,25 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   void _getStarted(BuildContext context) {
-    final done = context.read<AppState>().onboardingDone;
-    Navigator.pushReplacementNamed(
-      context,
-      done ? AppRoutes.main : AppRoutes.onboarding,
-    );
+    final state = context.read<AppState>();
+    if (state.isLoggedIn) {
+      if (state.isProfileLoaded) {
+        Navigator.pushReplacementNamed(context, AppRoutes.main);
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.profileSetup);
+      }
+      return;
+    }
+
+    if (state.onboardingDone) {
+      Navigator.pushReplacementNamed(context, AppRoutes.main);
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+    }
   }
 
   void _signIn(BuildContext context) {
-    context.read<AppState>().completeOnboarding();
-    Navigator.pushReplacementNamed(context, AppRoutes.main);
+    Navigator.pushNamed(context, AppRoutes.login);
   }
 
   @override
@@ -145,12 +154,12 @@ class _HeartBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return const SizedBox(
       width: 84,
       height: 64,
       child: Stack(
         alignment: Alignment.center,
-        children: const [
+        children: [
           CustomPaint(size: Size(84, 64), painter: _HeartPetalsPainter()),
           Icon(Icons.favorite_rounded, size: 42, color: AppColors.crimson),
         ],
@@ -172,7 +181,7 @@ class _HeartPetalsPainter extends CustomPainter {
     paintPetal(
       canvas,
       6,
-      Paint()..color = AppColors.roseLight.withOpacity(0.7),
+      Paint()..color = AppColors.roseLight.withValues(alpha: 0.7),
     );
     canvas.restore();
   }

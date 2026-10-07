@@ -7,6 +7,6 @@ void main() {
     await tester.pumpWidget(const CheriApp());
 
     expect(find.text('Cheri'), findsWidgets);
-    expect(find.text('Get Started  →'), findsOneWidget);
+    expect(find.text('Get Started'), findsOneWidget);
   });
 }

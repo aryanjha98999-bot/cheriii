@@ -121,9 +121,9 @@ final textTheme = base.textTheme.apply(
       sliderTheme: SliderThemeData(
         trackHeight: 3,
         activeTrackColor: AppColors.crimson,
-        inactiveTrackColor: AppColors.roseLight.withOpacity(0.45),
+        inactiveTrackColor: AppColors.roseLight.withValues(alpha: 0.45),
         thumbColor: AppColors.crimson,
-        overlayColor: AppColors.crimson.withOpacity(0.12),
+        overlayColor: AppColors.crimson.withValues(alpha: 0.12),
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
         tickMarkShape: SliderTickMarkShape.noTickMark,
       ),
@@ -136,12 +136,12 @@ final textTheme = base.textTheme.apply(
       ),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: AppColors.crimson,
-        selectionColor: AppColors.roseLight.withOpacity(0.5),
+        selectionColor: AppColors.roseLight.withValues(alpha: 0.5),
         selectionHandleColor: AppColors.crimson,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.85),
+        fillColor: Colors.white.withValues(alpha: 0.85),
         hintStyle: AppTextStyles.bodyMuted,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

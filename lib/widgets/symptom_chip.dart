@@ -55,7 +55,7 @@ class SymptomChip extends StatelessWidget {
                   boxShadow: selected
                       ? [
                           BoxShadow(
-                            color: AppColors.crimson.withOpacity(0.25),
+                            color: AppColors.crimson.withValues(alpha: 0.25),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),

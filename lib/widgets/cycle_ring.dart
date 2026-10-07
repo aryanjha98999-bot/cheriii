@@ -59,7 +59,7 @@ class CycleRingPainter extends CustomPainter {
     canvas.drawCircle(
       c,
       radius - _stroke / 2,
-      Paint()..color = Colors.white.withOpacity(0.55),
+      Paint()..color = Colors.white.withValues(alpha: 0.55),
     );
     canvas.drawCircle(
       c,
@@ -67,7 +67,7 @@ class CycleRingPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = _stroke
-        ..color = AppColors.roseLight.withOpacity(0.35),
+        ..color = AppColors.roseLight.withValues(alpha: 0.35),
     );
 
     if (progress > 0.005) {
@@ -91,7 +91,7 @@ class CycleRingPainter extends CustomPainter {
         hp,
         _stroke * 0.95,
         Paint()
-          ..color = Colors.black.withOpacity(0.10)
+          ..color = Colors.black.withValues(alpha: 0.10)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
       );
       canvas.drawCircle(hp, _stroke * 0.85, Paint()..color = Colors.white);
@@ -119,7 +119,7 @@ class CycleRingPainter extends CustomPainter {
     paintPetal(
       canvas,
       size.width * 0.035,
-      Paint()..color = AppColors.roseLight.withOpacity(0.8),
+      Paint()..color = AppColors.roseLight.withValues(alpha: 0.8),
     );
     canvas.restore();
   }

@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
-      firstDate: DateTime(2023),
+      firstDate: DateTime(DateTime.now().year - 3),
       lastDate: max,
     );
     if (picked != null && mounted) {

@@ -118,6 +118,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+  Future<void> _deleteEntry() async {
+    final state = context.read<AppState>();
+    await state.deleteEntry(_selected);
+    setState(() {
+      _flow = FlowLevel.none;
+      _symptoms.clear();
+    });
+    if (mounted) {
+      Helpers.showSnack(
+        context,
+        'Entry cleared for ${Helpers.shortDate(_selected)} 🗑️',
+      );
+    }
+  }
+
   /// Position of [d] within its consecutive run of period days (1-based).
   int _runPosition(AppState state, DateTime d) {
     var pos = 1;
@@ -436,6 +451,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     label: AppStrings.saveEntry,
                     onPressed: _save,
                   ),
+                  if (state.entryFor(_selected) != null) ...[
+                    const SizedBox(height: 8),
+                    Center(
+                      child: TextButton.icon(
+                        icon: const Icon(Icons.delete_outline_rounded,
+                            size: 18, color: AppColors.textSecondary),
+                        label: Text(
+                          'Clear entry for this day',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onPressed: _deleteEntry,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

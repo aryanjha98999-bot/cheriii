@@ -55,7 +55,7 @@ class SafeAssetImage extends StatelessWidget {
           child: Icon(
             fallbackIcon,
             size: iconSize,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
           ),
         ),
       ),

@@ -200,7 +200,7 @@ class _PadlockIllustration extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.crimson.withOpacity(0.3),
+                        color: AppColors.crimson.withValues(alpha: 0.3),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
@@ -253,7 +253,7 @@ class _LockBlossomPainter extends CustomPainter {
     paintPetal(
       canvas,
       10,
-      Paint()..color = AppColors.roseLight.withOpacity(0.8),
+      Paint()..color = AppColors.roseLight.withValues(alpha: 0.8),
     );
     canvas.restore();
   }

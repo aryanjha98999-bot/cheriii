@@ -24,9 +24,9 @@ void paintBlossom(
   double rotation,
   double opacity,
 ) {
-  final fill = Paint()..color = AppColors.roseLight.withOpacity(opacity);
+  final fill = Paint()..color = AppColors.roseLight.withValues(alpha: opacity);
   final edge = Paint()
-    ..color = AppColors.rose.withOpacity(opacity * 0.35)
+    ..color = AppColors.rose.withValues(alpha: opacity * 0.35)
     ..style = PaintingStyle.stroke
     ..strokeWidth = 0.8;
 
@@ -41,7 +41,7 @@ void paintBlossom(
   canvas.drawCircle(
     Offset.zero,
     r * 0.12,
-    Paint()..color = AppColors.crimson.withOpacity(opacity),
+    Paint()..color = AppColors.crimson.withValues(alpha: opacity),
   );
   canvas.restore();
 }
@@ -58,7 +58,7 @@ class BlossomCornerPainter extends CustomPainter {
     paintBlossom(canvas, Offset(w * 0.40, h * 0.12), w * 0.09, 1.1, 0.40);
     paintBlossom(canvas, Offset(w * 0.92, h * 0.74), w * 0.10, 0.2, 0.45);
 
-    final loose = Paint()..color = AppColors.roseLight.withOpacity(0.5);
+    final loose = Paint()..color = AppColors.roseLight.withValues(alpha: 0.5);
     for (final p in [
       [0.55, 0.62, 0.9],
       [0.25, 0.40, -0.6],
@@ -156,7 +156,7 @@ class _FallingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    _paint.color = AppColors.roseLight.withOpacity(opacity);
+    _paint.color = AppColors.roseLight.withValues(alpha: opacity);
     for (final p in petals) {
       final progress = (t.value * p.speed + p.phase) % 1.0;
       final y = -20 + progress * (size.height + 40);
